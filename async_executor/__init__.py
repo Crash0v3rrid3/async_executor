@@ -20,7 +20,7 @@ def _start_worker():
     __thread.start()
 
 
-def set_event_loop(loop: asyncio.BaseEventLoop):
+def set_event_loop(loop: asyncio.AbstractEventLoop):
     """Call this to initialize async executor.
     NOTE: Should be called once per application. This is to maintain a single
     event loop throughout the app.
@@ -85,4 +85,11 @@ def async_to_sync(cor):
     return inner
 
 
-__all__ = ["run_async_job", "complete_async_jobs", "async_to_sync", "set_event_loop", "get_event_loop"]
+__all__ = [
+    "run_async_job",
+    "complete_async_jobs",
+    "async_to_sync",
+    "set_event_loop",
+    "get_event_loop",
+    "agen_to_gen"
+]

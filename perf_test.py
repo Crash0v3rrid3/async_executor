@@ -23,10 +23,7 @@ def time_this(func):
 
 async def async_api_call(url):
     async with aiohttp.ClientSession() as session:
-        async with session.request(
-            "GET",
-            url
-        ) as request:
+        async with session.request("GET", url) as request:
             await request.read()
 
 
@@ -35,7 +32,12 @@ def sync_api_call(session, url):
 
 
 def async_run_parallel(calls: int, url: str):
-    return time_this(partial(async_executor.complete_async_jobs, *(async_api_call(url) for _ in range(calls))))
+    return time_this(
+        partial(
+            async_executor.complete_async_jobs,
+            *(async_api_call(url) for _ in range(calls)),
+        )
+    )
 
 
 def sync_run_parallel(calls: int, num_workers: int, url: str):
@@ -59,10 +61,14 @@ for url in URLS:
         calls = 10 ** e
 
         # Average of 5
-        async_execution_times = [async_run_parallel(calls, url) for _ in range(AVERAGE_OF)]
+        async_execution_times = [
+            async_run_parallel(calls, url) for _ in range(AVERAGE_OF)
+        ]
         async_cpu_time_avg = sum(async_execution_times) / AVERAGE_OF
 
-        sync_execution_times = [sync_run_parallel(calls, NUM_WORKERS, url) for _ in range(AVERAGE_OF)]
+        sync_execution_times = [
+            sync_run_parallel(calls, NUM_WORKERS, url) for _ in range(AVERAGE_OF)
+        ]
         sync_cpu_time_avg = sum(sync_execution_times) / AVERAGE_OF
 
         print(f"URL: {url}, API Calls: {calls}, Average of: {AVERAGE_OF}")

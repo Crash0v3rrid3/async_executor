@@ -13,7 +13,7 @@ def _func():
     __event_loop.run_forever()
 
 
-def _start_worker():
+def start_worker_thread():
     # Thread locals will not be copied
     # Make sure to send all required args to the coroutine call
     __thread = threading.Thread(target=_func, name="looper", daemon=True)
@@ -23,13 +23,13 @@ def _start_worker():
 def set_event_loop(loop: asyncio.AbstractEventLoop):
     """Call this to initialize async executor.
     NOTE: Should be called once per application. This is to maintain a single
-    event loop throughout the app.
+    event loop throughout the app. Also, call start_worker_thread if the app
+    doesn't have a primary thread for running the async jobs
     """
     global __event_loop
     if __event_loop is not None:
         return
     __event_loop = loop
-    _start_worker()
 
 
 def get_event_loop():
@@ -72,6 +72,7 @@ def async_to_sync(cor):
     """
 
     if inspect.isasyncgenfunction(cor):
+
         @wraps(cor)
         def inner(*args, **kwargs):
             yield from agen_to_gen(cor(*args, **kwargs))
@@ -91,5 +92,6 @@ __all__ = [
     "async_to_sync",
     "set_event_loop",
     "get_event_loop",
-    "agen_to_gen"
+    "agen_to_gen",
+    "start_worker_thread"
 ]

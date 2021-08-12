@@ -52,6 +52,9 @@ class AsyncToSyncMixin:
     Useful when working with sync frameworks like Django and you want take full advantage of
     async concurrency.
     """
+    # To avoid conflicts with base classes
+    __slots__ = ()
+
     def __enter__(self):
         try:
             enter = super().__enter__

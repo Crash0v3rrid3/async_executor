@@ -1,7 +1,6 @@
 import asyncio
 import inspect
 import threading
-from asyncio import Task
 from concurrent import futures
 from functools import wraps
 from typing import Awaitable, Tuple, AsyncGenerator
@@ -46,17 +45,10 @@ def get_event_loop():
     return __event_loop
 
 
-async def call_now(awt: Awaitable):
-    if isinstance(awt, Task):
-        return await awt
-
-    return await asyncio.create_task(awt)
-
-
 def run_async_job(cor: Awaitable) -> futures.Future:
     """Use this to run a task asynchronously."""
     assert __event_loop is not None, "Call set_event_loop first!"
-    return asyncio.run_coroutine_threadsafe(call_now(cor), loop=__event_loop)
+    return asyncio.run_coroutine_threadsafe(cor, loop=__event_loop)
 
 
 def complete_async_jobs(*cors: Awaitable) -> Tuple[futures.Future, ...]:

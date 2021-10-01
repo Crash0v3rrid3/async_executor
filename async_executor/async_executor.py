@@ -51,14 +51,17 @@ def get_event_loop():
 def run_async_job(cor: Coroutine) -> futures.Future:
     """Use this to run a task asynchronously."""
     assert __event_loop is not None, "Call set_event_loop first!"
-    logger.debug("async_executor.run_async_job(%s(...))", cor.cr_code.co_name)
+    assert asyncio.iscoroutine(cor), "A coroutine object is required!"
+    if asyncio.iscoroutine(cor):
+        logger.debug("async_executor.run_async_job(%s(...))", cor.cr_code.co_name)
+
     return asyncio.run_coroutine_threadsafe(cor, loop=__event_loop)
 
 
 def complete_async_jobs(*cors: Awaitable) -> Tuple[futures.Future, ...]:
     """Use this to optimize execution by delegating I/O tasks to async concurrency"""
     assert __event_loop is not None, "Call set_event_loop first!"
-    logger.debug("async_executor.complete_async_jobs(%s)", repr(cors))
+    logger.debug("async_executor.complete_async_jobs()")
     return asyncio.run_coroutine_threadsafe(
         asyncio.wait(cors, loop=__event_loop),
         loop=__event_loop,

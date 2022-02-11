@@ -69,7 +69,7 @@ def run_async_job(cor: Coroutine) -> futures.Future:
     loop = __event_loops[os.getpid()]
 
     with suppress(RuntimeError):
-        if asyncio.Task.current_task() is not None:
+        if asyncio.current_task() is not None:
             return loop.create_task(cor)
 
     return asyncio.run_coroutine_threadsafe(cor, loop=loop)
